@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>World Cup 2026 — Addis Ababa Time</title>
+<title>World Cup 2026 — Ethiopian Time</title>
 <script defer src="/_vercel/insights/script.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,25 +79,86 @@
 
   /* hero next-match */
   .hero{
-    margin:16px; padding:18px;
+    margin:16px;
     border:1px solid var(--line); border-radius:18px;
-    background:linear-gradient(135deg, rgba(242,177,52,0.10), rgba(247,243,232,0.02));
     position:relative; overflow:hidden;
+    background:var(--pitch-deep);
+    min-height:160px;
   }
-  .hero::before{
-    content:''; position:absolute; inset:0;
-    background-image: radial-gradient(circle, transparent 0, transparent 41%, rgba(255,255,255,0.05) 41%, rgba(255,255,255,0.05) 42%, transparent 42%);
-    background-size: 130px 130px; background-position:center -40px;
-    opacity:.5; pointer-events:none;
+
+  /* Two flag panels, side by side, filling the hero */
+  .hero-flags{
+    position:absolute; inset:0; display:flex; pointer-events:none;
   }
+  .hero-flag-half{
+    flex:1; background-size:cover; background-position:center;
+  }
+  /* dark overlay: heavy on edges, lighter toward centre */
+  .hero-flags::after{
+    content:''; position:absolute; inset:0; border-radius:17px;
+    background:
+      linear-gradient(to right,
+        rgba(10,44,34,0.82) 0%,
+        rgba(10,44,34,0.38) 38%,
+        rgba(10,44,34,0.38) 62%,
+        rgba(10,44,34,0.82) 100%),
+      linear-gradient(to bottom,
+        rgba(10,44,34,0.55) 0%,
+        rgba(10,44,34,0.10) 40%,
+        rgba(10,44,34,0.60) 100%);
+  }
+  /* centre divider line */
+  .hero-flags::before{
+    content:''; position:absolute; left:50%; top:12%; bottom:12%;
+    width:1px; background:rgba(242,177,52,0.22); transform:translateX(-50%);
+    z-index:1;
+  }
+
+  /* text content sits above the flags */
+  .hero-content{
+    position:relative; z-index:2; padding:18px;
+  }
+
   .hero-label{ font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.18em; color:var(--amber); text-transform:uppercase;}
-  .hero-teams{ font-family:'Anton',sans-serif; font-size:24px; letter-spacing:.02em; margin:8px 0 4px; text-transform:uppercase;}
-  .hero-meta{ font-size:13px; color:var(--sage); }
+
+  /* VS row: home · VS · away */
+  .hero-vs-row{
+    display:flex; align-items:center; justify-content:space-between;
+    margin:10px 0 6px; gap:8px;
+  }
+  .hero-team{
+    flex:1; display:flex; flex-direction:column; gap:5px;
+  }
+  .hero-team.away{ align-items:flex-end; text-align:right; }
+  .hero-team-name{
+    font-family:'Anton',sans-serif; font-size:18px; letter-spacing:.02em;
+    text-transform:uppercase; line-height:1.1; color:var(--cream);
+    text-shadow:0 1px 8px rgba(0,0,0,0.8);
+  }
+  .hero-team-flag{
+    width:38px; height:26px; border-radius:5px; object-fit:cover;
+    border:1px solid rgba(255,255,255,0.22);
+    box-shadow:0 2px 10px rgba(0,0,0,0.5);
+    display:block;
+  }
+  .hero-vs-badge{
+    flex:0 0 auto;
+    font-family:'Anton',sans-serif; font-size:28px; color:var(--amber);
+    text-shadow:0 0 20px rgba(242,177,52,0.6);
+    padding:0 6px; line-height:1;
+  }
+
+  .hero-meta{ font-size:12px; color:var(--sage); }
   .hero-countdown{
     margin-top:12px; font-family:'DM Mono',monospace; font-size:13px;
     color:var(--cream); display:flex; gap:14px;
   }
   .hero-countdown b{ font-family:'Anton',sans-serif; font-size:20px; display:block; color:var(--amber); font-weight:400;}
+  .hero-live{ display:flex; align-items:center; gap:8px; margin-top:10px; }
+  .hero-live-dot{
+    width:8px; height:8px; border-radius:50%; background:var(--terra);
+    animation:pulse 1.4s infinite;
+  }
 
   /* day group */
   .day-group{ padding:0 16px; }
@@ -108,6 +169,7 @@
   .day-heading .dot{ width:6px; height:6px; border-radius:50%; background:var(--terra); display:none;}
   .day-heading.is-today{ color:var(--amber); }
   .day-heading.is-today .dot{ display:inline-block; }
+  .day-heading .label{ flex:1; }
 
   /* match card */
   .match{
@@ -128,9 +190,11 @@
   .code{
     flex:0 0 30px; height:30px; border-radius:8px; background:rgba(247,243,232,0.06);
     border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
-    font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.05em; color:var(--sage);
+    overflow:hidden; font-size:15px; line-height:1;
   }
-  .team-row.win .code{ border-color:var(--amber); color:var(--amber); }
+  .flag-img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .flag-fallback{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+  .team-row.win .code{ border-color:var(--amber); }
   .score{ margin-left:auto; font-family:'DM Mono',monospace; font-weight:700; font-size:15px; }
 
   .meta{ flex:0 0 auto; text-align:right; }
@@ -227,6 +291,172 @@
     h1{ font-size:48px; }
     .hero-teams{ font-size:30px; }
   }
+
+  /* ---------- Poster button ---------- */
+  .poster-btn{
+    width:100%;
+    font-family:'DM Mono',monospace; font-size:13px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--pitch-deep); background:var(--amber);
+    border:none; border-radius:12px; padding:13px 16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:.15s; box-shadow:0 4px 14px rgba(242,177,52,0.18);
+  }
+  .poster-btn:hover{ filter:brightness(1.07); transform:translateY(-1px); }
+
+  .btn-stack{
+    display:flex; flex-direction:column; gap:10px; margin:0 16px;
+  }
+  .today-btn{
+    width:100%;
+    font-family:'DM Mono',monospace; font-size:13px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--amber); background:transparent;
+    border:1px solid var(--amber); border-radius:12px; padding:13px 16px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:.15s;
+  }
+  .today-btn:hover{ background:rgba(242,177,52,0.10); transform:translateY(-1px); }
+
+  /* ---------- Poster modal ---------- */
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(10,44,34,0.72); backdrop-filter:blur(4px);
+    display:none; align-items:flex-start; justify-content:center; z-index:100;
+    padding:0; overflow-y:auto;
+  }
+  .modal-overlay.open{ display:flex; }
+  .modal{
+    background:var(--pitch); border:1px solid var(--line); border-radius:0;
+    width:100%; min-height:100%; display:flex; flex-direction:column;
+    max-height:100vh; overflow-y:auto;
+  }
+  .modal-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px; border-bottom:1px solid var(--line); position:sticky; top:0;
+    background:var(--pitch); z-index:2;
+  }
+  .modal-header h2{ font-family:'Anton',sans-serif; font-size:20px; text-transform:uppercase; letter-spacing:.04em; }
+  .modal-close{
+    background:none; border:1px solid var(--line); color:var(--cream); border-radius:8px;
+    width:32px; height:32px; font-size:16px; cursor:pointer; line-height:1;
+  }
+  .modal-close:hover{ border-color:var(--terra); color:var(--terra); }
+
+  .modal-body{ padding:16px; display:flex; flex-direction:column; gap:16px; }
+  .control-group{ display:flex; flex-direction:column; gap:8px; }
+  .control-group .ctl-label{
+    font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--sage);
+  }
+  .control-group select{
+    background:rgba(247,243,232,0.06); border:1px solid var(--line); color:var(--cream);
+    border-radius:10px; padding:10px 12px; font-family:'DM Sans',sans-serif; font-size:14px;
+    appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239FBBA8' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 12px center;
+    padding-right:32px;
+  }
+
+  /* date-range row */
+  .range-row{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; }
+  .range-sep{ font-family:'DM Mono',monospace; font-size:12px; color:var(--sage); text-align:center; }
+
+  /* selection mode toggle */
+  .sel-mode{ display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .sel-mode button{
+    flex:1; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.06em;
+    background:none; border:none; color:var(--sage); padding:9px 8px; cursor:pointer; transition:.15s;
+    text-transform:uppercase;
+  }
+  .sel-mode button.active{ background:rgba(242,177,52,0.18); color:var(--amber); font-weight:700; }
+
+  /* match count info */
+  .match-info{
+    font-family:'DM Mono',monospace; font-size:11px; color:var(--sage);
+    padding:6px 10px; background:rgba(247,243,232,0.04); border-radius:8px;
+    border:1px solid var(--line); display:none;
+  }
+  .match-info.visible{ display:block; }
+  .match-info.warn{ color:var(--terra); border-color:rgba(217,96,59,0.3); }
+
+  .swatches{ display:flex; gap:12px; flex-wrap:wrap; }
+  .swatch{
+    width:52px; height:52px; border-radius:50%; cursor:pointer;
+    border:2px solid rgba(247,243,232,0.15);
+    transition:.2s; position:relative;
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,0.18);
+  }
+  .swatch.active{
+    border-color:var(--cream);
+    transform:scale(1.12);
+    box-shadow:0 0 0 3px rgba(247,243,232,0.22), inset 0 0 0 1px rgba(0,0,0,0.18);
+  }
+  .swatch-label{
+    font-family:'DM Mono',monospace; font-size:10px; color:var(--sage); text-align:center; margin-top:4px;
+  }
+  .swatch-wrap{ display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; }
+
+  .modal .mode-toggle{ width:100%; border-radius:10px; }
+  .modal .mode-toggle button{ flex:1; padding:10px; font-size:12px; text-align:center; }
+
+  /* orient toggle */
+  .orient-toggle{ display:flex; gap:10px; }
+  .orient-btn{
+    flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:10px 8px; border:1px solid var(--line); border-radius:10px; cursor:pointer;
+    background:none; color:var(--sage); font-family:'DM Mono',monospace; font-size:10px;
+    letter-spacing:.06em; text-transform:uppercase; transition:.15s;
+  }
+  .orient-btn .orient-icon{
+    border:2px solid currentColor; border-radius:4px; background:rgba(255,255,255,0.06);
+  }
+  .orient-btn .orient-icon.portrait{ width:20px; height:32px; }
+  .orient-btn .orient-icon.landscape{ width:32px; height:20px; }
+  .orient-btn.active{ border-color:var(--amber); color:var(--amber); background:rgba(242,177,52,0.08); }
+
+  .preview-wrap{
+    border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--pitch-deep);
+    display:flex; align-items:center; justify-content:center; min-height:180px; position:relative;
+    width:100%; max-height:52vh;
+  }
+  .preview-wrap canvas{
+    width:100% !important;
+    height:auto !important;
+    max-height:52vh;
+    object-fit:contain;
+    display:block;
+  }
+  /* landscape canvas: constrain by height not width */
+  .preview-wrap.landscape canvas{
+    width:auto !important;
+    height:100% !important;
+    max-height:52vh;
+    max-width:100%;
+  }
+  .preview-loading{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:'DM Mono',monospace; font-size:12px; color:var(--sage);
+    background:rgba(10,44,34,0.6);
+  }
+
+  .modal-footer{
+    padding:16px; border-top:1px solid var(--line); display:flex; gap:10px;
+    position:sticky; bottom:0; background:var(--pitch);
+  }
+  .primary-btn{
+    flex:1; font-family:'DM Mono',monospace; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    font-size:13px; color:var(--pitch-deep); background:var(--amber); border:none; border-radius:10px;
+    padding:13px; cursor:pointer; transition:.15s;
+  }
+  .primary-btn:hover{ filter:brightness(1.07); }
+  .primary-btn:disabled{ opacity:.5; cursor:default; }
+
+  @media (min-width:700px){
+    .modal-overlay{ align-items:center; padding:32px; }
+    .modal{ width:min(660px, 100%); min-height:auto; border-radius:20px; max-height:92vh; overflow-y:auto; }
+  }
+  @media (min-width:1100px){
+    .btn-stack{ margin:0; }
+    .modal{ width:min(740px, 100%); }
+  }
 </style>
 </head>
 <body>
@@ -235,7 +465,7 @@
   <aside class="sidebar">
     <header>
       <div class="eyebrow">
-        <span>Addis Ababa · EAT (UTC+3)</span>
+        <span>Ethiopian Time · EAT (UTC+3)</span>
         <span class="right">
           <span class="clock" id="clock">--:--:--</span>
           <span class="mode-toggle" id="modeToggle">
@@ -250,6 +480,11 @@
     <div class="rail" id="rail"></div>
 
     <div class="hero" id="hero"></div>
+
+    <div class="btn-stack">
+      <button class="today-btn" id="goToday"> Today's Matches</button>
+      <button class="poster-btn" id="openPoster"> Create Fixture Poster</button>
+    </div>
   </aside>
 
   <main class="content">
@@ -261,6 +496,82 @@
       Knockout-stage opponents fill in as the bracket is decided.
     </footer>
   </main>
+</div>
+
+<div class="modal-overlay" id="posterModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Fixture Poster</h2>
+      <button class="modal-close" id="posterClose">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="control-group">
+        <span class="ctl-label">Selection</span>
+        <div class="sel-mode" id="selMode">
+          <button data-mode="day" class="active">Single Day</button>
+          <button data-mode="range">Date Range</button>
+        </div>
+      </div>
+
+      <!-- Single day picker -->
+      <div class="control-group" id="dayPickerGroup">
+        <span class="ctl-label">Match day</span>
+        <select id="posterDay"></select>
+      </div>
+
+      <!-- Date range pickers (hidden by default) -->
+      <div class="control-group" id="rangePickerGroup" style="display:none">
+        <span class="ctl-label">From → To</span>
+        <div class="range-row">
+          <select id="posterFrom"></select>
+          <span class="range-sep">→</span>
+          <select id="posterTo"></select>
+        </div>
+      </div>
+
+      <div class="match-info" id="matchInfo"></div>
+
+      <div class="control-group">
+        <span class="ctl-label">Orientation</span>
+        <div class="orient-toggle">
+          <button class="orient-btn active" data-orient="portrait">
+            <div class="orient-icon portrait"></div>
+            9:16 · Story
+          </button>
+          <button class="orient-btn" data-orient="landscape">
+            <div class="orient-icon landscape"></div>
+            16:9 · Banner
+          </button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="ctl-label">Color theme</span>
+        <div class="swatches" id="posterThemes"></div>
+      </div>
+
+      <div class="control-group">
+        <span class="ctl-label">Kickoff time format</span>
+        <div class="mode-toggle" id="posterModeToggle">
+          <button data-mode="12" class="active">12H · Habesha</button>
+          <button data-mode="24">24H · EAT</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <span class="ctl-label">Preview</span>
+        <div class="preview-wrap" id="previewWrap">
+          <canvas id="posterCanvas"></canvas>
+          <div class="preview-loading" id="posterLoading">Rendering…</div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="primary-btn" id="posterDownload">⬇ Download PNG</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -277,6 +588,99 @@ const CODE = {
   'Uzbekistan':'UZB','Colombia':'COL'
 };
 function code(name){ return CODE[name] || (name.length<=3 ? name.toUpperCase() : '—'); }
+
+// ---------- Country flags ----------
+// Codes match flagcdn.com naming (ISO 3166-1 alpha-2, plus gb-eng / gb-sct for home nations).
+const FLAG_CODE = {
+  'Mexico':'mx','South Africa':'za','South Korea':'kr','Czechia':'cz','Canada':'ca',
+  'Bosnia & Herzegovina':'ba','USA':'us','Paraguay':'py','Qatar':'qa','Switzerland':'ch',
+  'Brazil':'br','Morocco':'ma','Haiti':'ht','Scotland':'gb-sct','Australia':'au','Türkiye':'tr',
+  'Germany':'de','Curaçao':'cw','Netherlands':'nl','Japan':'jp','Ivory Coast':'ci','Ecuador':'ec',
+  'Sweden':'se','Tunisia':'tn','Spain':'es','Cape Verde':'cv','Belgium':'be','Egypt':'eg',
+  'Saudi Arabia':'sa','Uruguay':'uy','Iran':'ir','New Zealand':'nz','France':'fr','Senegal':'sn',
+  'Iraq':'iq','Norway':'no','Argentina':'ar','Algeria':'dz','Austria':'at','Jordan':'jo',
+  'Portugal':'pt','DR Congo':'cd','England':'gb-eng','Croatia':'hr','Ghana':'gh','Panama':'pa',
+  'Uzbekistan':'uz','Colombia':'co'
+};
+
+// Markup for the small flag box in the match list.
+// Goes straight to flagcdn (no local files), parent code fallback for gb-eng/gb-sct, then 2-letter abbrev box
+function flagImgHtml(name){
+  const c = FLAG_CODE[name];
+  if(!c) return `<span class="flag-fallback">⚽</span>`;
+  const cdn       = `https://flagcdn.com/h80/${c}.png`;
+  const cdnParent = `https://flagcdn.com/h80/${c.split('-')[0]}.png`;
+  const abbr      = (CODE[name] || name.slice(0,3)).toUpperCase().replace(/&/g,'');
+  return `<img class="flag-img" alt="${name}" loading="lazy" src="${cdn}"
+    data-cdn-parent="${cdnParent}" data-abbr="${abbr}"
+    onerror="flagFallback(this)">`;
+}
+function flagFallback(img){
+  const stage = img.dataset.stage || '0';
+  if(stage==='0' && img.dataset.cdnParent){
+    img.dataset.stage='1'; img.src = img.dataset.cdnParent; return;
+  }
+  // Final fallback: styled abbreviation box
+  const span = document.createElement('span');
+  span.className = 'flag-fallback';
+  span.textContent = img.dataset.abbr || '?';
+  span.style.fontSize = '9px';
+  span.style.fontWeight = '700';
+  span.style.fontFamily = '"DM Mono", monospace';
+  img.replaceWith(span);
+}
+
+// ---------- Flag image loader for the poster canvas ----------
+// Uses fetch → blob URL so the canvas never hits a CORS taint.
+// flagcdn serves PNGs at w160 (160px wide) which is plenty for the canvas cards.
+const flagImageCache = {};
+
+async function getFlagImage(name){
+  if(name in flagImageCache) return flagImageCache[name];
+
+  const c = FLAG_CODE[name];
+  if(!c){ flagImageCache[name] = null; return null; }
+
+  // Try the exact code, then the parent (for gb-eng → gb, gb-sct → gb)
+  const candidates = [`https://flagcdn.com/w160/${c}.png`];
+  const parent = c.split('-')[0];
+  if(parent !== c) candidates.push(`https://flagcdn.com/w160/${parent}.png`);
+
+  for(const url of candidates){
+    try{
+      const res = await fetch(url);
+      if(!res.ok) continue;
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const img = await new Promise((resolve, reject)=>{
+        const i = new Image();
+        i.onload  = ()=>resolve(i);
+        i.onerror = ()=>reject();
+        i.src = blobUrl;
+      });
+      flagImageCache[name] = img;
+      return img;
+    } catch(_){ /* try next */ }
+  }
+
+  // Draw an SVG placeholder with the 3-letter code — always works, no network needed
+  const abbr = (CODE[name] || name.slice(0,3)).toUpperCase().slice(0,3);
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="160" height="120">
+    <rect width="160" height="120" rx="8" fill="rgba(255,255,255,0.08)"/>
+    <text x="80" y="68" text-anchor="middle" font-family="monospace" font-size="32"
+      font-weight="700" fill="rgba(255,255,255,0.55)">${abbr}</text>
+  </svg>`;
+  const blob = new Blob([svg], {type:'image/svg+xml'});
+  const blobUrl = URL.createObjectURL(blob);
+  const img = await new Promise((resolve, reject)=>{
+    const i = new Image();
+    i.onload  = ()=>resolve(i);
+    i.onerror = ()=>reject();
+    i.src = blobUrl;
+  });
+  flagImageCache[name] = img;
+  return img;
+}
 
 // ---------- Match data ----------
 // [iso ET datetime, home, away, venue, city, label, scoreHome|null, scoreAway|null]
@@ -463,6 +867,9 @@ order.forEach(k=>groups[k].sort((a,b)=>a.d-b.d));
 
 const TODAY = nowKey();
 
+// Match duration: 90 min play + 15 min halftime = 105 min regulation time
+const MATCH_DURATION_MS = 105 * 60 * 1000;
+
 // ---------- Render date rail ----------
 const rail = document.getElementById('rail');
 order.forEach(k=>{
@@ -487,12 +894,12 @@ order.forEach(k=>{
   const heading = document.createElement('div');
   heading.className = 'day-heading' + (k===TODAY ? ' is-today':'');
   const sample = groups[k][0].d;
-  heading.innerHTML = `<span class="dot"></span>${fmtDayLabel.format(sample)}`;
+  heading.innerHTML = `<span class="dot"></span><span class="label">${fmtDayLabel.format(sample)}</span>`;
   section.appendChild(heading);
 
   groups[k].forEach(m=>{
     const now = new Date();
-    const end = new Date(m.d.getTime() + 2.5*3600*1000);
+    const end = new Date(m.d.getTime() + MATCH_DURATION_MS);
     const isLive = now >= m.d && now < end;
     const isPast = now >= end;
     const played = m.sh !== null;
@@ -509,8 +916,8 @@ order.forEach(k=>{
         <div class="ampm">${amharicPeriod(m.d)}</div>
       </div>
       <div class="teams">
-        <div class="team-row ${homeWin?'win':''}"><span class="code">${code(m.home)}</span><span>${m.home}</span>${played?`<span class="score">${m.sh}</span>`:''}</div>
-        <div class="team-row ${awayWin?'win':''}"><span class="code">${code(m.away)}</span><span>${m.away}</span>${played?`<span class="score">${m.sa}</span>`:''}</div>
+        <div class="team-row ${homeWin?'win':''}"><span class="code">${flagImgHtml(m.home)}</span><span>${m.home}</span>${played?`<span class="score">${m.sh}</span>`:''}</div>
+        <div class="team-row ${awayWin?'win':''}"><span class="code">${flagImgHtml(m.away)}</span><span>${m.away}</span>${played?`<span class="score">${m.sa}</span>`:''}</div>
       </div>
       <div class="meta">
         ${isLive?'<div class="live-tag">LIVE</div>':`<div class="group-tag">${m.label}</div>`}
@@ -530,7 +937,7 @@ function renderHero(){
   let target = null, live=false;
   for(const k of order){
     for(const m of groups[k]){
-      const end = new Date(m.d.getTime() + 2.5*3600*1000);
+      const end = new Date(m.d.getTime() + MATCH_DURATION_MS);
       if(now < end){ target = m; live = now>=m.d; break; }
     }
     if(target) break;
@@ -550,15 +957,76 @@ function renderHero(){
       <div><b>${h}</b>hrs</div><div><b>${mnt}</b>min</div><div><b>${s}</b>sec</div>
     </div>`;
   }
+  const homeFlag = FLAG_CODE[target.home] ? `https://flagcdn.com/w320/${FLAG_CODE[target.home]}.png` : '';
+  const awayFlag = FLAG_CODE[target.away] ? `https://flagcdn.com/w320/${FLAG_CODE[target.away]}.png` : '';
+  const homeFlagSmall = FLAG_CODE[target.home] ? `https://flagcdn.com/w80/${FLAG_CODE[target.home]}.png` : '';
+  const awayFlagSmall = FLAG_CODE[target.away] ? `https://flagcdn.com/w80/${FLAG_CODE[target.away]}.png` : '';
+
   hero.innerHTML = `
-    <div class="hero-label">${live?'Now playing':'Up next'} · ${target.label}</div>
-    <div class="hero-teams">${target.home} vs ${target.away}</div>
-    <div class="hero-meta">${fmtDayLabel.format(target.d)} · ${displayTime(target.d)} ${amharicPeriod(target.d)} · ${target.city}</div>
-    ${cd}
+    <div class="hero-flags">
+      <div class="hero-flag-half" style="background-image:url('${homeFlag}')"></div>
+      <div class="hero-flag-half" style="background-image:url('${awayFlag}')"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-label">${live?'Now playing':'Up next'} · ${target.label}</div>
+      <div class="hero-vs-row">
+        <div class="hero-team">
+          ${homeFlagSmall ? `<img class="hero-team-flag" src="${homeFlagSmall}" alt="${target.home}" onerror="this.style.display='none'">` : ''}
+          <div class="hero-team-name">${target.home}</div>
+        </div>
+        <div class="hero-vs-badge">VS</div>
+        <div class="hero-team away">
+          ${awayFlagSmall ? `<img class="hero-team-flag" src="${awayFlagSmall}" alt="${target.away}" onerror="this.style.display='none'">` : ''}
+          <div class="hero-team-name">${target.away}</div>
+        </div>
+      </div>
+      <div class="hero-meta">${fmtDayLabel.format(target.d)} · ${displayTime(target.d)} ${amharicPeriod(target.d)} · ${target.city}</div>
+      ${cd}
+    </div>
   `;
 }
+// ---------- Hero scheduler ----------
+// Ticks every second for the countdown digits, AND schedules an exact
+// timeout at the moment the current match ends so the hero advances immediately.
+let _heroTick = null;
+let _heroAdvance = null;
+
+function scheduleHero() {
+  // 1-second tick keeps countdown digits live
+  if (_heroTick) clearInterval(_heroTick);
+  _heroTick = setInterval(renderHero, 1000);
+
+  // Exact advance: fire precisely when the current match's window closes
+  if (_heroAdvance) clearTimeout(_heroAdvance);
+  const now = new Date();
+  let endMs = null;
+  for (const k of order) {
+    for (const m of groups[k]) {
+      const e = m.d.getTime() + MATCH_DURATION_MS;
+      if (now.getTime() < e) { endMs = e; break; }
+    }
+    if (endMs !== null) break;
+  }
+  if (endMs !== null) {
+    const delay = endMs - now.getTime();
+    if (delay > 0 && delay < 86400000) {
+      _heroAdvance = setTimeout(() => {
+        renderHero();
+        scheduleHero(); // re-anchor for the next match
+      }, delay + 200);  // +200 ms buffer so we're past the boundary
+    }
+  }
+}
+
 renderHero();
-setInterval(renderHero, 1000);
+scheduleHero();
+
+// Re-anchor immediately when tab regains visibility or window focus,
+// so a manual clock change or background throttle doesn't leave stale state.
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { renderHero(); scheduleHero(); }
+});
+window.addEventListener('focus', () => { renderHero(); scheduleHero(); });
 
 // ---------- Live clock ----------
 function renderClock(){
@@ -581,6 +1049,483 @@ document.getElementById('modeToggle').addEventListener('click', e=>{
   refreshMatchTimes();
   renderClock();
   renderHero();
+});
+
+// ---------- Fixture poster generator ----------
+function rr(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+function fitFont(ctx, text, maxWidth, family, weight, maxSize, minSize){
+  let size = maxSize;
+  while(size > minSize){
+    ctx.font = `${weight} ${size}px ${family}`;
+    if(ctx.measureText(text).width <= maxWidth) break;
+    size -= 2;
+  }
+  ctx.font = `${weight} ${size}px ${family}`;
+}
+function displayTimeFor(d, mode){
+  const [hh,mm] = fmtHM.format(d).split(':');
+  if(mode==='24') return `${hh}:${mm}`;
+  return `${String(habeshaHour(parseInt(hh,10))).padStart(2,'0')}:${mm}`;
+}
+function drawFlagBox(ctx, img, x, y, size, radius, _unused, theme){
+  if(img){
+    ctx.save();
+    rr(ctx,x,y,size,size,radius); ctx.clip();
+    const scale = Math.max(size/img.width, size/img.height);
+    const w2 = img.width*scale, h2 = img.height*scale;
+    ctx.drawImage(img, x+(size-w2)/2, y+(size-h2)/2, w2, h2);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+    ctx.lineWidth = 1;
+    rr(ctx,x,y,size,size,radius); ctx.stroke();
+  } else {
+    // Should rarely hit this since getFlagImage returns SVG placeholder
+    ctx.fillStyle = theme.border;
+    rr(ctx,x,y,size,size,radius); ctx.fill();
+    ctx.strokeStyle = theme.border;
+    ctx.lineWidth = 1;
+    rr(ctx,x,y,size,size,radius); ctx.stroke();
+  }
+}
+
+// Color themes for the poster
+const THEMES = [
+  { id:'pitch',    name:'Pitch Green',  bg:'#0E3B2E', glow:'rgba(242,177,52,0.18)',  card:'rgba(247,243,232,0.055)', border:'rgba(247,243,232,0.14)', cream:'#F7F3E8', accent:'#F2B134', sage:'#9FBBA8' },
+  { id:'midnight', name:'Midnight Mint',bg:'#0D1520', glow:'rgba(0,230,184,0.16)',   card:'rgba(255,255,255,0.055)', border:'rgba(255,255,255,0.13)', cream:'#E8F0F8', accent:'#00E6B8', sage:'#7FA3B8' },
+  { id:'habesha',  name:'Habesha Gold', bg:'#12240A', glow:'rgba(252,221,9,0.18)',   card:'rgba(255,255,255,0.055)', border:'rgba(255,255,255,0.13)', cream:'#FDF6E3', accent:'#FCDD09', sage:'#A9C2AC' },
+  { id:'sunset',   name:'Sunset Terra', bg:'#221008', glow:'rgba(217,96,59,0.22)',   card:'rgba(255,255,255,0.055)', border:'rgba(255,255,255,0.13)', cream:'#FBEFE4', accent:'#E8703B', sage:'#C9A48E' },
+];
+
+// MAX matches per orientation
+const MAX_PORTRAIT  = 8;
+const MAX_LANDSCAPE = 6;
+
+async function drawPoster(canvas, matches, themeId, mode, orient){
+  const theme = THEMES.find(t=>t.id===themeId) || THEMES[0];
+  if(!matches || !matches.length) return;
+  if(document.fonts && document.fonts.ready) await document.fonts.ready;
+
+  const isPortrait = orient === 'portrait';
+
+  // ── Canvas dimensions ──────────────────────────────────────────────────────
+  const W = isPortrait ? 1080 : 1920;
+  const H = isPortrait ? 1920 : 1080;
+
+  canvas.width  = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // ── Background ─────────────────────────────────────────────────────────────
+  ctx.fillStyle = theme.bg;
+  ctx.fillRect(0,0,W,H);
+
+  // Subtle horizontal pitch lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.022)';
+  ctx.lineWidth = 1;
+  for(let yy=0; yy<H; yy+=56){
+    ctx.beginPath(); ctx.moveTo(0,yy+.5); ctx.lineTo(W,yy+.5); ctx.stroke();
+  }
+
+  // Glow blob top-centre
+  const glowR = ctx.createRadialGradient(W/2, -H*0.05, 0, W/2, -H*0.05, W*0.9);
+  glowR.addColorStop(0, theme.glow);
+  glowR.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = glowR;
+  ctx.fillRect(0,0,W,H*0.45);
+
+  // ── Layout constants ───────────────────────────────────────────────────────
+  const PAD   = isPortrait ? 52 : 56;           // outer horizontal padding
+  const INNER = W - PAD*2;                       // card width
+
+  // Header
+  const HEAD_TOP = isPortrait ? 64 : 44;
+  const titleSize= isPortrait ? 72 : 56;
+  const subSize  = isPortrait ? 26 : 20;
+  const HEAD_H   = isPortrait ? 185 : 140;
+  const FOOT_H   = isPortrait ? 56  : 48;
+
+  // figure card height from available space
+  const availH   = H - HEAD_H - FOOT_H;
+  const n        = matches.length;
+  const cardGapBase  = isPortrait ? 10 : 8;
+  const totalGapBase = cardGapBase * (n - 1);
+  const cardHRaw = Math.floor((availH - totalGapBase) / n);
+  const cardH    = isPortrait ? Math.min(cardHRaw, 140) : cardHRaw;
+  // Redistribute leftover vertical space as equal gaps (n+1: above first, between, below last)
+  const totalCardsH = cardH * n;
+  const cardGap  = isPortrait
+    ? Math.floor((availH - totalCardsH) / (n + 1))
+    : cardGapBase;
+
+  // decide internal layout based on orientation
+  // Portrait: two-row layout (home row / away row) stacked inside each card
+  // Landscape: single-row layout side by side
+  const flagSize  = isPortrait
+    ? Math.max(32, Math.min(46, Math.floor(cardH * 0.26)))
+    : Math.max(28, Math.min(40, Math.floor(cardH * 0.34)));
+  const cardR     = 18; // corner radius
+
+  // ── Header ─────────────────────────────────────────────────────────────────
+  ctx.textAlign = 'center';
+
+  // eyebrow
+  ctx.fillStyle = theme.sage;
+  ctx.font = `500 ${subSize-4}px "DM Mono", monospace`;
+  ctx.fillText('WORLD CUP 2026 · ETHIOPIAN TIME (EAT)', W/2, HEAD_TOP);
+
+  // Title
+  ctx.fillStyle = theme.cream;
+  ctx.font = `400 ${titleSize}px Anton, sans-serif`;
+  ctx.fillText('FIXTURE GUIDE', W/2, HEAD_TOP + titleSize + 8);
+
+  // date label
+  const firstD = matches[0].d;
+  const lastD  = matches[n-1].d;
+  const sameDay = fmtDayKey.format(firstD) === fmtDayKey.format(lastD);
+  const dateStr = sameDay
+    ? fmtDayLabel.format(firstD).toUpperCase()
+    : `${fmtDayLabel.format(firstD).toUpperCase()} – ${fmtDayLabel.format(lastD).toUpperCase()}`;
+  ctx.fillStyle = theme.accent;
+  ctx.font = `700 ${subSize}px "DM Mono", monospace`;
+  ctx.fillText(dateStr, W/2, HEAD_TOP + titleSize + 8 + subSize + 16);
+
+  // thin accent rule under header
+  const ruleY = HEAD_H - 12;
+  const ruleGrad = ctx.createLinearGradient(PAD, ruleY, PAD+INNER, ruleY);
+  ruleGrad.addColorStop(0,'rgba(0,0,0,0)');
+  ruleGrad.addColorStop(0.2, theme.accent);
+  ruleGrad.addColorStop(0.8, theme.accent);
+  ruleGrad.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.strokeStyle = ruleGrad;
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(PAD, ruleY); ctx.lineTo(PAD+INNER, ruleY); ctx.stroke();
+
+  // ── Preload flags ──────────────────────────────────────────────────────────
+  const flags = {};
+  for(const m of matches){
+    flags[m.home] = await getFlagImage(m.home);
+    flags[m.away] = await getFlagImage(m.away);
+  }
+
+  // ── Match cards ────────────────────────────────────────────────────────────
+  let cy = isPortrait ? HEAD_H + cardGap : HEAD_H;
+
+  for(const m of matches){
+    const cx = PAD, cw = INNER, ch = cardH;
+
+    // card bg
+    ctx.fillStyle = theme.card;
+    rr(ctx, cx, cy, cw, ch, cardR); ctx.fill();
+    ctx.strokeStyle = theme.border;
+    ctx.lineWidth = 1.5;
+    rr(ctx, cx, cy, cw, ch, cardR); ctx.stroke();
+
+    if(isPortrait){
+      // ── Portrait card: side-by-side layout matching reference image ───────
+      // Home team (flag + name) on left · VS in centre · Away team (flag + name) on right
+      // Group tag top-right, kickoff time bottom-centre
+
+      const hPad   = 24;
+      const mid    = cy + ch / 2;
+      const vsColW = Math.floor(cw * 0.18);  // VS column in the centre
+      const teamColW = Math.floor((cw - hPad*2 - vsColW) / 2); // each team half
+
+      // Compact inline layout: flag + name side-by-side on one row per team side
+      // This keeps cards short vertically — flag height drives card height
+      const fH        = Math.max(28, Math.min(40, Math.floor(ch * 0.52)));  // flag height
+      const fW        = Math.round(fH * 1.48);                              // flag width ~3:2
+      const nameFontSz = Math.max(13, Math.floor(fH * 0.52));
+      const timeFontSz = Math.max(10, Math.floor(ch * 0.18));
+      const tagFontSz  = Math.max(9,  Math.floor(ch * 0.16));
+      const gap        = 10; // gap between flag and name
+
+      // helper: draw rectangular flag clipped to rounded rect
+      function drawRectFlag(img, x, y, fw, fh, r){
+        if(img){
+          ctx.save();
+          rr(ctx,x,y,fw,fh,r); ctx.clip();
+          const scale = Math.max(fw/img.width, fh/img.height);
+          const w2=img.width*scale, h2=img.height*scale;
+          ctx.drawImage(img, x+(fw-w2)/2, y+(fh-h2)/2, w2, h2);
+          ctx.restore();
+          ctx.strokeStyle='rgba(0,0,0,0.22)'; ctx.lineWidth=1;
+          rr(ctx,x,y,fw,fh,r); ctx.stroke();
+        } else {
+          ctx.fillStyle=theme.border;
+          rr(ctx,x,y,fw,fh,r); ctx.fill();
+        }
+      }
+
+      // ── group tag – top right ─────────────────────────────────────────────
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.sage;
+      ctx.font = `500 ${tagFontSz}px "DM Mono", monospace`;
+      ctx.fillText(m.label.toUpperCase(), cx + cw - hPad, cy + ch/2);
+
+      // ── HOME: flag left-edge, name right of flag, right-aligned to centre ──
+      const homeFlagX = cx + hPad;
+      const homeFlagY = mid - fH / 2;
+      drawRectFlag(flags[m.home], homeFlagX, homeFlagY, fW, fH, 6);
+
+      const homeNameX = homeFlagX + fW + gap;
+      const homeNameMaxW = cx + cw/2 - 56 - homeNameX; // stop before VS
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.cream;
+      fitFont(ctx, m.home, homeNameMaxW, '"DM Sans", sans-serif', 700, nameFontSz, 11);
+      ctx.fillText(m.home, homeNameX, mid);
+
+      // ── VS centre ────────────────────────────────────────────────────────
+      const vsFontSz = Math.max(18, Math.floor(ch * 0.38));
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.accent;
+      ctx.font = `400 ${vsFontSz}px Anton, sans-serif`;
+      ctx.fillText('VS', cx + cw/2, mid);
+
+      // ── AWAY: flag right-edge, name left of flag, left-aligned from centre ─
+      const awayFlagX = cx + cw - hPad - fW;
+      const awayFlagY = mid - fH / 2;
+      drawRectFlag(flags[m.away], awayFlagX, awayFlagY, fW, fH, 6);
+
+      const awayNameMaxX = awayFlagX - gap;
+      const awayNameMaxW = awayNameMaxX - (cx + cw/2 + 56);
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.cream;
+      fitFont(ctx, m.away, awayNameMaxW, '"DM Sans", sans-serif', 700, nameFontSz, 11);
+      ctx.fillText(m.away, awayNameMaxX, mid);
+
+      // ── kickoff time – bottom centre ──────────────────────────────────────
+      ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillStyle = theme.accent;
+      ctx.font = `600 ${timeFontSz}px "DM Mono", monospace`;
+      ctx.fillText(`${displayTimeFor(m.d, mode)} · ${amharicPeriod(m.d)}`, cx + cw/2, cy + ch - 6);
+
+    } else {
+      // ── Landscape card: single horizontal row ──────────────────────────────
+      const vPad  = Math.max(8, Math.floor(ch * 0.12));
+      const mid   = cy + ch/2;
+      const vsW   = 90; // VS column width
+      const timeW = Math.floor(cw * 0.24);
+      const labelW= Math.floor(cw * 0.13);
+      const teamW = Math.floor((cw - vsW - timeW - labelW - 40) / 2); // each team column
+
+      // HOME side (left)
+      const homeX = cx + 20;
+      drawFlagBox(ctx, flags[m.home], homeX, mid - flagSize/2, flagSize, 8, null, theme);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.cream;
+      fitFont(ctx, m.home, teamW - flagSize - 14, '"DM Sans", sans-serif', 700, Math.floor(flagSize*0.72), 14);
+      ctx.fillText(m.home, homeX + flagSize + 12, mid);
+
+      // VS centre
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.accent;
+      ctx.font = `400 ${Math.floor(ch*0.38)}px Anton, sans-serif`;
+      ctx.fillText('VS', cx + cw/2, mid);
+
+      // AWAY side (right)
+      const awayX = cx + cw - 20 - flagSize;
+      drawFlagBox(ctx, flags[m.away], awayX, mid - flagSize/2, flagSize, 8, null, theme);
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = theme.cream;
+      fitFont(ctx, m.away, teamW - flagSize - 14, '"DM Sans", sans-serif', 700, Math.floor(flagSize*0.72), 14);
+      ctx.fillText(m.away, awayX - 12, mid);
+
+      // kickoff time below VS
+      ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+      ctx.fillStyle = theme.accent;
+      ctx.font = `600 ${Math.max(11, Math.floor(ch*0.16))}px "DM Mono", monospace`;
+      ctx.fillText(`${displayTimeFor(m.d, mode)} · ${amharicPeriod(m.d)}`, cx+cw/2, cy+ch-vPad);
+
+      // group label top-right
+      ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+      ctx.fillStyle = theme.sage;
+      ctx.font = `500 ${Math.max(10, Math.floor(ch*0.14))}px "DM Mono", monospace`;
+      ctx.fillText(m.label.toUpperCase(), cx+cw-20, cy+vPad);
+    }
+
+    ctx.textBaseline = 'alphabetic';
+    cy += cardH + cardGap;
+  }
+
+  // ── Footer ─────────────────────────────────────────────────────────────────
+  const footY = H - FOOT_H/2;
+  ctx.textBaseline = 'middle';
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = theme.accent;
+  ctx.font = `700 ${isPortrait?22:18}px "DM Mono", monospace`;
+  ctx.fillText('ethioworldcup.vercel.app', PAD, footY);
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = theme.sage;
+  ctx.font = `400 ${isPortrait?20:16}px "DM Mono", monospace`;
+  ctx.fillText('World Cup 2026 Fixtures · EAT', W-PAD, footY);
+
+  ctx.textBaseline = 'alphabetic';
+}
+
+// ---------- Poster modal wiring ----------
+const posterModal     = document.getElementById('posterModal');
+const posterCanvas    = document.getElementById('posterCanvas');
+const posterLoading   = document.getElementById('posterLoading');
+const posterDaySelect = document.getElementById('posterDay');
+const posterFromSel   = document.getElementById('posterFrom');
+const posterToSel     = document.getElementById('posterTo');
+const posterThemes    = document.getElementById('posterThemes');
+const matchInfo       = document.getElementById('matchInfo');
+const previewWrap     = document.getElementById('previewWrap');
+
+let posterMode   = '12';
+let posterTheme  = THEMES[0].id;
+let posterOrient = 'portrait';
+let selMode      = 'day';   // 'day' | 'range'
+
+// Populate all three day selects
+function buildDayOptions(sel, selectedVal){
+  sel.innerHTML = '';
+  order.forEach(k=>{
+    const opt = document.createElement('option');
+    opt.value = k;
+    opt.textContent = fmtDayLabel.format(groups[k][0].d) + (k===TODAY ? ' (today)' : '');
+    sel.appendChild(opt);
+  });
+  sel.value = selectedVal || (order.includes(TODAY) ? TODAY : order[0]);
+}
+buildDayOptions(posterDaySelect, order.includes(TODAY) ? TODAY : order[0]);
+buildDayOptions(posterFromSel,   order.includes(TODAY) ? TODAY : order[0]);
+buildDayOptions(posterToSel,     order.includes(TODAY) ? TODAY : order[0]);
+
+// Populate theme swatches
+THEMES.forEach(t=>{
+  const wrap = document.createElement('div');
+  wrap.className = 'swatch-wrap';
+  const sw = document.createElement('div');
+  sw.className = 'swatch' + (t.id===posterTheme ? ' active':'');
+  sw.style.background = `linear-gradient(135deg, ${t.bg} 0%, ${t.accent} 100%)`;
+  sw.dataset.theme = t.id;
+  sw.title = t.name;
+  const label = document.createElement('div');
+  label.className = 'swatch-label';
+  label.textContent = t.name;
+  wrap.appendChild(sw); wrap.appendChild(label);
+  wrap.onclick = ()=>{
+    posterTheme = t.id;
+    posterThemes.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('active', s.dataset.theme===t.id));
+    renderPosterPreview();
+  };
+  posterThemes.appendChild(wrap);
+});
+
+// Collect matches for current selection
+function getSelectedMatches(){
+  const MAX = posterOrient === 'portrait' ? MAX_PORTRAIT : MAX_LANDSCAPE;
+  let all = [];
+  if(selMode === 'day'){
+    all = groups[posterDaySelect.value] || [];
+  } else {
+    const from = posterFromSel.value;
+    const to   = posterToSel.value;
+    const fromIdx = order.indexOf(from);
+    const toIdx   = order.indexOf(to);
+    const [lo, hi] = fromIdx <= toIdx ? [fromIdx, toIdx] : [toIdx, fromIdx];
+    for(let i=lo; i<=hi; i++) all = all.concat(groups[order[i]] || []);
+  }
+  const truncated = all.length > MAX;
+  const shown = truncated ? all.slice(0, MAX) : all;
+
+  // update info badge
+  if(truncated){
+    matchInfo.textContent = `Showing ${MAX} of ${all.length} matches · max per poster. Narrow your range.`;
+    matchInfo.className = 'match-info visible warn';
+  } else if(all.length > 0){
+    matchInfo.textContent = `${all.length} match${all.length>1?'es':''} selected`;
+    matchInfo.className = 'match-info visible';
+  } else {
+    matchInfo.textContent = 'No matches in selection.';
+    matchInfo.className = 'match-info visible warn';
+  }
+  return shown;
+}
+
+function renderPosterPreview(){
+  // update preview-wrap class for landscape aspect ratio
+  previewWrap.classList.toggle('landscape', posterOrient === 'landscape');
+
+  const matches = getSelectedMatches();
+  if(!matches.length){ posterLoading.style.display='none'; return; }
+
+  posterLoading.style.display = 'flex';
+  drawPoster(posterCanvas, matches, posterTheme, posterMode, posterOrient).finally(()=>{
+    posterLoading.style.display = 'none';
+  });
+}
+
+// Selection mode toggle
+document.getElementById('selMode').addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn || btn.classList.contains('active')) return;
+  selMode = btn.dataset.mode;
+  document.querySelectorAll('#selMode button').forEach(b=>b.classList.toggle('active', b===btn));
+  document.getElementById('dayPickerGroup').style.display   = selMode==='day'   ? '' : 'none';
+  document.getElementById('rangePickerGroup').style.display = selMode==='range' ? '' : 'none';
+  renderPosterPreview();
+});
+
+// Orientation toggle
+document.querySelectorAll('.orient-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    posterOrient = btn.dataset.orient;
+    document.querySelectorAll('.orient-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    renderPosterPreview();
+  });
+});
+
+// Day / range change
+posterDaySelect.addEventListener('change', renderPosterPreview);
+posterFromSel.addEventListener('change', renderPosterPreview);
+posterToSel.addEventListener('change', renderPosterPreview);
+
+// Time format toggle
+document.getElementById('posterModeToggle').addEventListener('click', e=>{
+  const btn = e.target.closest('button');
+  if(!btn || btn.classList.contains('active')) return;
+  posterMode = btn.dataset.mode;
+  document.querySelectorAll('#posterModeToggle button').forEach(b=>b.classList.toggle('active', b===btn));
+  renderPosterPreview();
+});
+
+document.getElementById('goToday').addEventListener('click', ()=>{
+  // Try exact today first, then find the nearest upcoming day
+  const target = document.getElementById('day-'+TODAY)
+    || document.getElementById('day-'+(order.find(k=>k>=TODAY) || order[0]));
+  if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('openPoster').addEventListener('click', ()=>{
+  posterModal.classList.add('open');
+  renderPosterPreview();
+});
+function closePosterModal(){ posterModal.classList.remove('open'); }
+document.getElementById('posterClose').addEventListener('click', closePosterModal);
+posterModal.addEventListener('click', e=>{ if(e.target===posterModal) closePosterModal(); });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape') closePosterModal(); });
+
+document.getElementById('posterDownload').addEventListener('click', ()=>{
+  const link = document.createElement('a');
+  const from = selMode==='day' ? posterDaySelect.value : posterFromSel.value;
+  const to   = selMode==='day' ? posterDaySelect.value : posterToSel.value;
+  const suffix = from===to ? from : `${from}_${to}`;
+  link.download = `worldcup2026-${suffix}-${posterOrient}.png`;
+  link.href = posterCanvas.toDataURL('image/png');
+  link.click();
 });
 
 // ---------- Scroll to today on load ----------
