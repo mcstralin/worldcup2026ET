@@ -170,6 +170,44 @@
   .day-heading.is-today{ color:var(--amber); }
   .day-heading.is-today .dot{ display:inline-block; }
   .day-heading .label{ flex:1; }
+  .eth-date{
+    font-family:'DM Mono',monospace; font-size:11px; color:var(--amber);
+    opacity:0.75; letter-spacing:.04em;
+  }
+
+  /* ---- Tracing border — active match card ---- */
+  @keyframes trace-border {
+    0%   { stroke-dashoffset: var(--perimeter); }
+    100% { stroke-dashoffset: 0; }
+  }
+
+  .match.is-active {
+    position: relative;
+    z-index: 1;
+    border-radius: 10px;
+    border-bottom: none;
+    margin-bottom: 1px;
+    overflow: visible;
+  }
+
+  .match.is-active .border-svg {
+    position: absolute;
+    inset: -10px;
+    width: calc(100% + 20px);
+    height: calc(100% + 20px);
+    pointer-events: none;
+    overflow: visible;
+    z-index: 2;
+  }
+
+  .match.is-active .border-svg rect {
+    fill: none;
+    stroke: url(#borderGrad);
+    stroke-width: 2;
+    stroke-linecap: round;
+    animation: trace-border 2s cubic-bezier(0.4,0,0.2,1) forwards;
+    filter: url(#borderGlow);
+  }
 
   /* match card */
   .match{
@@ -490,7 +528,7 @@
 
     <div class="hero" id="hero"></div>
 
-    <div class="btn-stack desktop-only">
+    <div class="btn-stack">
       <button class="today-btn" id="goToday"> Today's Matches</button>
       <button class="poster-btn" id="openPoster"> Create Fixture Poster</button>
     </div>
@@ -705,36 +743,36 @@ const M = [
 ["2026-06-13T18:00:00-04:00","Brazil","Morocco","New York New Jersey Stadium","East Rutherford","Group C",1,1],
 ["2026-06-13T21:00:00-04:00","Haiti","Scotland","Gillette Stadium","Foxborough","Group C",0,1],
 
-["2026-06-14T00:00:00-04:00","Australia","Türkiye","BC Place","Vancouver","Group D",null,null],
-["2026-06-14T13:00:00-04:00","Germany","Curaçao","NRG Stadium","Houston","Group E",null,null],
-["2026-06-14T16:00:00-04:00","Netherlands","Japan","AT&T Stadium","Arlington","Group F",null,null],
-["2026-06-14T19:00:00-04:00","Ivory Coast","Ecuador","Lincoln Financial Field","Philadelphia","Group E",null,null],
-["2026-06-14T22:00:00-04:00","Sweden","Tunisia","Estadio BBVA","Monterrey","Group F",null,null],
+["2026-06-14T00:00:00-04:00","Australia","Türkiye","BC Place","Vancouver","Group D",0,2],
+["2026-06-14T13:00:00-04:00","Germany","Curaçao","NRG Stadium","Houston","Group E",8,0],
+["2026-06-14T16:00:00-04:00","Netherlands","Japan","AT&T Stadium","Arlington","Group F",2,0],
+["2026-06-14T19:00:00-04:00","Ivory Coast","Ecuador","Lincoln Financial Field","Philadelphia","Group E",2,1],
+["2026-06-14T22:00:00-04:00","Sweden","Tunisia","Estadio BBVA","Monterrey","Group F",3,0],
 
-["2026-06-15T12:00:00-04:00","Spain","Cape Verde","Mercedes-Benz Stadium","Atlanta","Group H",null,null],
-["2026-06-15T15:00:00-04:00","Belgium","Egypt","Lumen Field","Seattle","Group G",null,null],
-["2026-06-15T18:00:00-04:00","Saudi Arabia","Uruguay","Hard Rock Stadium","Miami Gardens","Group H",null,null],
-["2026-06-15T21:00:00-04:00","Iran","New Zealand","SoFi Stadium","Inglewood","Group G",null,null],
+["2026-06-15T12:00:00-04:00","Spain","Cape Verde","Mercedes-Benz Stadium","Atlanta","Group H",5,0],
+["2026-06-15T15:00:00-04:00","Belgium","Egypt","Lumen Field","Seattle","Group G",2,0],
+["2026-06-15T18:00:00-04:00","Saudi Arabia","Uruguay","Hard Rock Stadium","Miami Gardens","Group H",1,2],
+["2026-06-15T21:00:00-04:00","Iran","New Zealand","SoFi Stadium","Inglewood","Group G",2,0],
 
-["2026-06-16T15:00:00-04:00","France","Senegal","New York New Jersey Stadium","East Rutherford","Group I",null,null],
-["2026-06-16T18:00:00-04:00","Iraq","Norway","Gillette Stadium","Foxborough","Group I",null,null],
-["2026-06-16T21:00:00-04:00","Argentina","Algeria","Arrowhead Stadium","Kansas City","Group J",null,null],
+["2026-06-16T15:00:00-04:00","France","Senegal","New York New Jersey Stadium","East Rutherford","Group I",2,0],
+["2026-06-16T18:00:00-04:00","Iraq","Norway","Gillette Stadium","Foxborough","Group I",0,3],
+["2026-06-16T21:00:00-04:00","Argentina","Algeria","Arrowhead Stadium","Kansas City","Group J",3,0],
 
-["2026-06-17T00:00:00-04:00","Austria","Jordan","Levi's Stadium","Santa Clara","Group J",null,null],
-["2026-06-17T13:00:00-04:00","Portugal","DR Congo","NRG Stadium","Houston","Group K",null,null],
-["2026-06-17T16:00:00-04:00","England","Croatia","AT&T Stadium","Arlington","Group L",null,null],
-["2026-06-17T19:00:00-04:00","Ghana","Panama","BMO Field","Toronto","Group L",null,null],
-["2026-06-17T22:00:00-04:00","Uzbekistan","Colombia","Estadio Azteca","Mexico City","Group K",null,null],
+["2026-06-17T00:00:00-04:00","Austria","Jordan","Levi's Stadium","Santa Clara","Group J",3,0],
+["2026-06-17T13:00:00-04:00","Portugal","DR Congo","NRG Stadium","Houston","Group K",4,0],
+["2026-06-17T16:00:00-04:00","England","Croatia","AT&T Stadium","Arlington","Group L",2,0],
+["2026-06-17T19:00:00-04:00","Ghana","Panama","BMO Field","Toronto","Group L",1,0],
+["2026-06-17T22:00:00-04:00","Uzbekistan","Colombia","Estadio Azteca","Mexico City","Group K",0,3],
 
-["2026-06-18T12:00:00-04:00","Czechia","South Africa","Mercedes-Benz Stadium","Atlanta","Group A",null,null],
-["2026-06-18T15:00:00-04:00","Switzerland","Bosnia & Herzegovina","SoFi Stadium","Inglewood","Group B",null,null],
-["2026-06-18T18:00:00-04:00","Canada","Qatar","BC Place","Vancouver","Group B",null,null],
-["2026-06-18T21:00:00-04:00","Mexico","South Korea","Estadio Akron","Zapopan","Group A",null,null],
+["2026-06-18T12:00:00-04:00","Czechia","South Africa","Mercedes-Benz Stadium","Atlanta","Group A",1,0],
+["2026-06-18T15:00:00-04:00","Switzerland","Bosnia & Herzegovina","SoFi Stadium","Inglewood","Group B",4,0],
+["2026-06-18T18:00:00-04:00","Canada","Qatar","BC Place","Vancouver","Group B",2,1],
+["2026-06-18T21:00:00-04:00","Mexico","South Korea","Estadio Akron","Zapopan","Group A",0,1],
 
-["2026-06-19T15:00:00-04:00","USA","Australia","Lumen Field","Seattle","Group D",null,null],
-["2026-06-19T18:00:00-04:00","Scotland","Morocco","Gillette Stadium","Foxborough","Group C",null,null],
-["2026-06-19T20:30:00-04:00","Brazil","Haiti","Lincoln Financial Field","Philadelphia","Group C",null,null],
-["2026-06-19T23:00:00-04:00","Türkiye","Paraguay","Levi's Stadium","Santa Clara","Group D",null,null],
+["2026-06-19T15:00:00-04:00","USA","Australia","Lumen Field","Seattle","Group D",3,0],
+["2026-06-19T18:00:00-04:00","Scotland","Morocco","Gillette Stadium","Foxborough","Group C",1,2],
+["2026-06-19T20:30:00-04:00","Brazil","Haiti","Lincoln Financial Field","Philadelphia","Group C",3,0],
+["2026-06-19T23:00:00-04:00","Türkiye","Paraguay","Levi's Stadium","Santa Clara","Group D",2,1],
 
 ["2026-06-20T13:00:00-04:00","Netherlands","Sweden","NRG Stadium","Houston","Group F",null,null],
 ["2026-06-20T16:00:00-04:00","Germany","Ivory Coast","BMO Field","Toronto","Group E",null,null],
@@ -865,6 +903,42 @@ function displayClock(d){
 function dayKey(d){ return fmtDayKey.format(d); }
 function nowKey(){ return dayKey(new Date()); }
 
+// ---------- Ethiopian calendar conversion ----------
+function gregorianToJDN(y, m, d) {
+  return Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4)
+    + Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12)
+    - Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4)
+    + d - 32075;
+}
+function gregorianToEthiopian(date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit'
+  }).formatToParts(date);
+  const gYear = parseInt(parts.find(p=>p.type==='year').value);
+  const gMonth = parseInt(parts.find(p=>p.type==='month').value);
+  const gDay = parseInt(parts.find(p=>p.type==='day').value);
+  const jdn = gregorianToJDN(gYear, gMonth, gDay);
+  // Ethiopian epoch JDN (Meskerem 1, 1 ET = Aug 29, 8 CE Julian)
+  const ethEpoch = 1724220;
+  const days = jdn - ethEpoch;
+  const y4 = Math.floor(days / (365 * 4 + 1));
+  const rem = days - y4 * (365 * 4 + 1);
+  const yr = Math.min(3, Math.floor(rem / 365));
+  const eYear = y4 * 4 + yr + 1;
+  const dayOfYear = rem - yr * 365 + 1;
+  const eMonth = Math.min(13, Math.ceil(dayOfYear / 30));
+  const eDay = Math.min(eMonth <= 12 ? 30 : 6, dayOfYear - (eMonth - 1) * 30);
+  return { year: eYear, month: eMonth, day: eDay };
+}
+const ETH_MONTHS = [
+  'መስከረም','ጥቅምት','ህዳር','ታህሳስ','ጥር','የካቲት',
+  'መጋቢት','ሚያዚያ','ግንቦት','ሰኔ','ሐምሌ','ነሐሴ','ጳጉሜ'
+];
+function ethDateLabel(d) {
+  const e = gregorianToEthiopian(d);
+  return `${e.day} ${ETH_MONTHS[e.month - 1] || ''}`;
+}
+
 // group matches by EAT day
 const groups = {};
 const order = [];
@@ -905,7 +979,8 @@ order.forEach(k=>{
   const heading = document.createElement('div');
   heading.className = 'day-heading' + (k===TODAY ? ' is-today':'');
   const sample = groups[k][0].d;
-  heading.innerHTML = `<span class="dot"></span><span class="label">${fmtDayLabel.format(sample)}</span>`;
+  const ethLabel = ethDateLabel(sample);
+  heading.innerHTML = `<span class="dot"></span><span class="label">${fmtDayLabel.format(sample)}</span><span class="eth-date">${ethLabel}</span>`;
   section.appendChild(heading);
 
   groups[k].forEach(m=>{
@@ -917,6 +992,8 @@ order.forEach(k=>{
 
     const row = document.createElement('div');
     row.className = 'match';
+    row.dataset.ts = m.d.getTime();
+    row.dataset.end = m.d.getTime() + MATCH_DURATION_MS;
 
     const homeWin = played && m.sh > m.sa;
     const awayWin = played && m.sa > m.sh;
@@ -942,6 +1019,157 @@ order.forEach(k=>{
   list.appendChild(section);
 });
 
+// ---------- Active card tracing border ----------
+function updateActiveCard() {
+  const now = Date.now();
+  const allRows = document.querySelectorAll('.match[data-ts]');
+  let activeRow = null;
+
+  // Priority 1: live match
+  for (const row of allRows) {
+    const ts = parseInt(row.dataset.ts);
+    const end = parseInt(row.dataset.end);
+    if (now >= ts && now < end) { activeRow = row; break; }
+  }
+
+  // Priority 2: next upcoming match
+  if (!activeRow) {
+    let earliest = Infinity;
+    for (const row of allRows) {
+      const ts = parseInt(row.dataset.ts);
+      if (ts > now && ts < earliest) { earliest = ts; activeRow = row; }
+    }
+  }
+
+  // Remove old active state
+  allRows.forEach(r => {
+    r.classList.remove('is-active');
+    const old = r.querySelector('.border-svg');
+    if (old) old.remove();
+  });
+
+  if (!activeRow) return;
+  activeRow.classList.add('is-active');
+
+  // Build the SVG tracing border
+  const PAD = 10; // px of breathing room on each side
+  const W = activeRow.offsetWidth + PAD * 2;
+  const H = activeRow.offsetHeight + PAD * 2;
+  const R = 14;
+  const perimeter = Math.round(2 * (W - 2*R) + 2 * (H - 2*R) + 2 * Math.PI * R);
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('class', 'border-svg');
+  svg.setAttribute('xmlns', ns);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%"   stop-color="#F2B134"/>
+        <stop offset="45%"  stop-color="#D9603B"/>
+        <stop offset="80%"  stop-color="#9FBBA8"/>
+        <stop offset="100%" stop-color="#F2B134"/>
+      </linearGradient>
+      <filter id="borderGlow" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <rect
+      x="1" y="1"
+      width="${W - 2}" height="${H - 2}"
+      rx="${R}" ry="${R}"
+      fill="none"
+      stroke="url(#borderGrad)"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-dasharray="${perimeter}"
+      stroke-dashoffset="${perimeter}"
+      filter="url(#borderGlow)"
+      style="animation: trace-border 2s cubic-bezier(0.4,0,0.2,1) forwards;"
+    />
+  `;
+
+  svg.style.setProperty('--perimeter', perimeter);
+  activeRow.appendChild(svg);
+}
+
+updateActiveCard();
+
+// ---------- Live goal-score patch (ONLY touches score numbers) ----------
+const _nameMap = {
+  'Bosnia and Herzegovina':'Bosnia & Herzegovina','Korea Republic':'South Korea',
+  "Côte d'Ivoire":'Ivory Coast','Congo DR':'DR Congo'
+};
+function _norm(n){ return _nameMap[n]||n; }
+
+// Index our existing match objects by kickoff timestamp for O(1) lookup
+const _byTs = {};
+Object.values(groups).flat().forEach(m=>{
+  // index every minute in a ±3-min window to absorb API timestamp drift
+  for(let d=-180000;d<=180000;d+=60000) _byTs[m.d.getTime()+d] = _byTs[m.d.getTime()+d]||m;
+});
+
+async function _fetchScores(){
+  // Only bother if at least one match is currently live or just finished
+  const now = Date.now();
+  const anyActive = Object.values(groups).flat().some(m=>{
+    const end = m.d.getTime() + MATCH_DURATION_MS;
+    return now >= m.d.getTime() && now < end;
+  });
+
+  let nextMs = anyActive ? 45000 : 5*60000; // 45 s live, 5 min idle
+
+  if(anyActive){
+    try{
+      const res  = await fetch('/api/matches');
+      const left = parseInt(res.headers.get('X-Requests-Available')||'10',10);
+      if(left < 5) nextMs = 10*60000; // quota nearly gone — back off hard
+
+      if(res.ok){
+        const data = await res.json();
+        (data.matches||[]).forEach(a=>{
+          const st = a.status;
+          if(st!=='IN_PLAY'&&st!=='PAUSED'&&st!=='FINISHED') return;
+          // Find our local match object
+          const t  = new Date(a.utcDate); t.setSeconds(0,0);
+          const h  = _norm(a.homeTeam?.name||'');
+          const aw = _norm(a.awayTeam?.name||'');
+          const m  = _byTs[t.getTime()];
+          if(!m || _norm(m.home)!==h || _norm(m.away)!==aw) return;
+
+          const sh = st==='FINISHED' ? a.score?.fullTime?.home : (a.score?.halfTime?.home??a.score?.fullTime?.home);
+          const sa = st==='FINISHED' ? a.score?.fullTime?.away : (a.score?.halfTime?.away??a.score?.fullTime?.away);
+          if(sh===m.sh && sa===m.sa) return; // nothing changed
+
+          // Patch ONLY the two score <span> elements in this row
+          m.sh=sh; m.sa=sa;
+          const row = document.querySelector(`.match[data-ts="${m.d.getTime()}"]`);
+          if(!row) return;
+          const [hr,ar] = row.querySelectorAll('.team-row');
+          [[hr,sh],[ar,sa]].forEach(([tr,sc])=>{
+            let el = tr.querySelector('.score');
+            if(sc===null||sc===undefined){ if(el) el.remove(); return; }
+            if(!el){ el=document.createElement('span'); el.className='score'; tr.appendChild(el); }
+            el.textContent = sc;
+            hr.classList.toggle('win', sh>sa);
+            ar.classList.toggle('win', sa>sh);
+          });
+        });
+      }
+    }catch(e){ console.warn('score fetch:',e); nextMs=2*60000; }
+  }
+
+  setTimeout(_fetchScores, nextMs);
+}
+setTimeout(_fetchScores, 3000); // start 3 s after page load
 // ---------- Hero: next/live match ----------
 function renderHero(){
   const now = new Date();
