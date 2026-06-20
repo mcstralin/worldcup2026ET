@@ -18,12 +18,22 @@ export default async function handler(req, res) {
 
     if (!upstream.ok) {
       const txt = await upstream.text();
-      return res.status(upstream.status).json({ error: txt });
+      console.error('football-data.org error', upstream.status, txt);
+      return res.status(upstream.status).json({
+        error: txt,
+        hint: upstream.status === 403
+          ? 'Your football-data.org plan does not include this competition (WC). The free tier only covers 12 leagues — World Cup matches require a paid plan.'
+          : upstream.status === 429
+          ? 'Rate limited by football-data.org. Back off and retry later.'
+          : undefined,
+      });
     }
 
     const data = await upstream.json();
+    if (!Array.isArray(data.matches)) {
+      console.error('Unexpected upstream shape (no matches array):', JSON.stringify(data).slice(0, 500));
+    }
 
-    // Pull out only what the browser needs: id, status, utcDate, teams, fullTime score
     const slim = (data.matches || []).map(m => ({
       id:       m.id,
       status:   m.status,
@@ -34,13 +44,22 @@ export default async function handler(req, res) {
       scoreAway: m.score?.fullTime?.away,
     }));
 
-    res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=10');
+    // Only cache successful, non-empty responses — an empty/error result
+    // getting cached for 30s+ is exactly how "it works but doesn't update" happens.
+    if (slim.length > 0) {
+      res.setHeader('Cache-Control', 's-maxage=30, stale-while-revalidate=10');
+    } else {
+      res.setHeader('Cache-Control', 'no-store');
+    }
     if (requestsAvailable) res.setHeader('X-Requests-Available', requestsAvailable);
     if (resetIn)           res.setHeader('X-Reset-In', resetIn);
 
-    // Also expose raw match list for debugging — remove ?debug after confirming
     const debug = req.query.debug === '1';
-    return res.status(200).json(debug ? data : { matches: slim });
+    return res.status(200).json(
+      debug
+        ? { rawMatchCount: (data.matches || []).length, slimMatchCount: slim.length, sampleRaw: (data.matches || [])[0] || null, matches: slim }
+        : { matches: slim }
+    );
 
   } catch (err) {
     console.error('Proxy error:', err);
