@@ -1104,72 +1104,91 @@ function updateActiveCard() {
 updateActiveCard();
 
 // ---------- Live goal-score patch (ONLY touches score numbers) ----------
+
+// Full name map: API name → our name
 const _nameMap = {
-  'Bosnia and Herzegovina':'Bosnia & Herzegovina','Korea Republic':'South Korea',
-  "Côte d'Ivoire":'Ivory Coast','Congo DR':'DR Congo'
+  'Bosnia and Herzegovina' : 'Bosnia & Herzegovina',
+  'Korea Republic'         : 'South Korea',
+  "Côte d'Ivoire"          : 'Ivory Coast',
+  'Congo DR'               : 'DR Congo',
+  'Iran (Islamic Republic)': 'Iran',
+  'China PR'               : 'China',
+  'Türkiye'                : 'Türkiye',
+  'Curaçao'                : 'Curaçao',
 };
-function _norm(n){ return _nameMap[n]||n; }
+function _norm(n){ return _nameMap[n] || n; }
 
-// Index our existing match objects by kickoff timestamp for O(1) lookup
-const _byTs = {};
-Object.values(groups).flat().forEach(m=>{
-  // index every minute in a ±3-min window to absorb API timestamp drift
-  for(let d=-180000;d<=180000;d+=60000) _byTs[m.d.getTime()+d] = _byTs[m.d.getTime()+d]||m;
-});
+// Build a flat list of all our match objects for fuzzy matching
+const _allMatches = Object.values(groups).flat();
 
-async function _fetchScores(){
-  // Only bother if at least one match is currently live or just finished
-  const now = Date.now();
-  const anyActive = Object.values(groups).flat().some(m=>{
-    const end = m.d.getTime() + MATCH_DURATION_MS;
-    return now >= m.d.getTime() && now < end;
+// Match API entry to our local match object.
+// Strategy: match by same calendar date (EAT) + first 3 chars of both team names.
+// This survives any name variation without a brittle timestamp comparison.
+function _findMatch(apiHome, apiAway, utcDate) {
+  const ah = _norm(apiHome || '').slice(0,3).toLowerCase();
+  const aa = _norm(apiAway  || '').slice(0,3).toLowerCase();
+  // API utcDate is UTC — convert to EAT date string (UTC+3)
+  const apiDay = new Date(new Date(utcDate).getTime() + 3*3600000)
+                   .toISOString().slice(0,10);
+
+  return _allMatches.find(m => {
+    const mDay = new Date(m.d.getTime() + 3*3600000).toISOString().slice(0,10);
+    if (mDay !== apiDay) return false;
+    const mh = _norm(m.home).slice(0,3).toLowerCase();
+    const ma = _norm(m.away).slice(0,3).toLowerCase();
+    return mh === ah && ma === aa;
+  }) || null;
+}
+
+function _patchScore(m, sh, sa) {
+  if (sh === m.sh && sa === m.sa) return; // nothing changed
+  m.sh = sh; m.sa = sa;
+  const row = document.querySelector(`.match[data-ts="${m.d.getTime()}"]`);
+  if (!row) return;
+  const [hr, ar] = row.querySelectorAll('.team-row');
+  [[hr, sh], [ar, sa]].forEach(([tr, sc]) => {
+    let el = tr.querySelector('.score');
+    if (sc === null || sc === undefined) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('span'); el.className = 'score'; tr.appendChild(el); }
+    el.textContent = sc;
   });
+  hr.classList.toggle('win', sh > sa);
+  ar.classList.toggle('win', sa > sh);
+}
 
-  let nextMs = anyActive ? 45000 : 5*60000; // 45 s live, 5 min idle
+async function _fetchScores() {
+  const now = Date.now();
+  // Only poll if a match window is currently open (kickoff → kickoff + 105 min)
+  const anyLive = _allMatches.some(m =>
+    now >= m.d.getTime() && now < m.d.getTime() + MATCH_DURATION_MS
+  );
 
-  if(anyActive){
-    try{
+  let nextMs = anyLive ? 45_000 : 5 * 60_000;
+
+  if (anyLive) {
+    try {
       const res  = await fetch('/api/matches');
-      const left = parseInt(res.headers.get('X-Requests-Available')||'10',10);
-      if(left < 5) nextMs = 10*60000; // quota nearly gone — back off hard
+      const left = parseInt(res.headers.get('X-Requests-Available') || '10', 10);
+      if (left < 5) nextMs = 10 * 60_000; // quota nearly gone
 
-      if(res.ok){
+      if (res.ok) {
         const data = await res.json();
-        (data.matches||[]).forEach(a=>{
-          const st = a.status;
-          if(st!=='IN_PLAY'&&st!=='PAUSED'&&st!=='FINISHED') return;
-          // Find our local match object
-          const t  = new Date(a.utcDate); t.setSeconds(0,0);
-          const h  = _norm(a.homeTeam?.name||'');
-          const aw = _norm(a.awayTeam?.name||'');
-          const m  = _byTs[t.getTime()];
-          if(!m || _norm(m.home)!==h || _norm(m.away)!==aw) return;
-
-          const sh = st==='FINISHED' ? a.score?.fullTime?.home : (a.score?.halfTime?.home??a.score?.fullTime?.home);
-          const sa = st==='FINISHED' ? a.score?.fullTime?.away : (a.score?.halfTime?.away??a.score?.fullTime?.away);
-          if(sh===m.sh && sa===m.sa) return; // nothing changed
-
-          // Patch ONLY the two score <span> elements in this row
-          m.sh=sh; m.sa=sa;
-          const row = document.querySelector(`.match[data-ts="${m.d.getTime()}"]`);
-          if(!row) return;
-          const [hr,ar] = row.querySelectorAll('.team-row');
-          [[hr,sh],[ar,sa]].forEach(([tr,sc])=>{
-            let el = tr.querySelector('.score');
-            if(sc===null||sc===undefined){ if(el) el.remove(); return; }
-            if(!el){ el=document.createElement('span'); el.className='score'; tr.appendChild(el); }
-            el.textContent = sc;
-            hr.classList.toggle('win', sh>sa);
-            ar.classList.toggle('win', sa>sh);
-          });
+        (data.matches || []).forEach(a => {
+          if (a.status !== 'IN_PLAY' && a.status !== 'PAUSED' && a.status !== 'FINISHED') return;
+          const m = _findMatch(a.home, a.away, a.utcDate);
+          if (!m) return;
+          _patchScore(m, a.scoreHome, a.scoreAway);
         });
       }
-    }catch(e){ console.warn('score fetch:',e); nextMs=2*60000; }
+    } catch(e) {
+      console.warn('score fetch:', e);
+      nextMs = 2 * 60_000;
+    }
   }
 
   setTimeout(_fetchScores, nextMs);
 }
-setTimeout(_fetchScores, 3000); // start 3 s after page load
+setTimeout(_fetchScores, 3000);
 // ---------- Hero: next/live match ----------
 function renderHero(){
   const now = new Date();
